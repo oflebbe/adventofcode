@@ -79,11 +79,66 @@ fn step(field: &Field) -> (Field, bool) {
             let mut next_to = 0;
             for ys in -1..=1 {
                 for xs in -1..=1 {
+                    
                     let xx = (x as i32 + xs) as usize;
                     let yy = (y as i32 + ys) as usize;
                     {
                         if field.get(xx, yy) == Position::Occupied {
                             next_to += 1;
+                        }
+                    }
+                }
+            }
+            if field.get(x, y)  == Position::Occupied {
+                // next_to one too large!
+                if next_to >= 5 {
+                    *res.get_mut(x,y) = Position::Empty; 
+                    changes = true;
+                } else {
+                    *res.get_mut(x,y) = Position::Occupied;
+                }
+            } else {
+                if next_to == 0 {
+                    *res.get_mut(x,y) = Position::Occupied;
+                    changes = true;
+                } else {
+                    *res.get_mut(x,y) = Position::Empty; 
+                }
+            }
+        }
+    }
+    (res, changes)
+}
+
+fn step2(field: &Field) -> (Field, bool) {
+    let mut res = Field { grid: vec!(Position::Nothing; field.width*field.height), width : field.width, height: field.height };
+    let mut changes = false;
+    
+    for y in 1..field.height-1 {
+        for x in 1..field.width-1 {
+            if field.get(x,y) == Position::Nothing {
+                continue;
+            }
+            let mut next_to = 0;
+            for ys in -1..=1 {
+                for xs in -1..=1 {
+                    if xs == 0 && ys == 0 {
+                        continue;
+                    }
+                    let mut xx = x;
+                    let mut yy = y;
+                    loop {
+                        xx = (xx as i32 + xs) as usize;
+                        yy = (yy as i32 + ys) as usize;  
+                        if xx < 1 || xx >= field.width-1 || yy < 1 ||yy >= field.height-1 {
+                            break;
+                        }
+                        if field.get(xx, yy) == Position::Occupied {
+                            next_to += 1;
+                            break;
+                        }
+                        if field.get(xx, yy) == Position::Empty {
+                            break;
                         }
                     }
                 }
@@ -141,6 +196,28 @@ L.LLLLL.LL";
         count += 1;
         let (new, changed) = step(&field);
         // print!("{}", new);
+        if !changed {
+            break;
+        }
+        field = new;
+    }
+    println!("{} {}", count, field.occupied());
+    let mut field = readin(t);
+    loop {
+        count += 1;
+        let (new, changed) = step2(&field);
+       
+        if !changed {
+            break;
+        }
+        field = new;
+    }
+    assert_eq!(26, field.occupied());
+    let mut field = readin(i);
+    loop {
+        count += 1;
+        let (new, changed) = step2(&field);
+       
         if !changed {
             break;
         }
