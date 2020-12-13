@@ -49,6 +49,7 @@ fn parse2( input : &str) -> (Vec<usize>, Vec<usize>) {
     parse3( lines.next().unwrap())
 }
 
+// Implement variant of solution to chinese remainder theorem
 fn solve2( nums : &[usize], diffs : &[usize]) -> usize {
     let mut step = nums[0];
     let mut v = 0;
@@ -61,8 +62,9 @@ fn solve2( nums : &[usize], diffs : &[usize]) -> usize {
             if i >= nums.len() {
                 break;
             }
+            // inputs are not sorted, we have to skip forward.
             let mut DD =  nums[i] as i64 - diffs[i] as i64;
-            while DD < 0 {
+            while DD < 0 { 
                 DD += nums[i] as i64;
             }
             D = DD as usize;
@@ -73,12 +75,6 @@ fn solve2( nums : &[usize], diffs : &[usize]) -> usize {
 }
 
 fn main() {
-   
-    
-   
-
-   
-
     let (n, d) = parse3( "17,x,13,19");
     assert_eq!( 3417,  solve2( &n, &d));
 
@@ -88,8 +84,6 @@ fn main() {
     assert_eq!( 1068781, solve2(&n, &d));
     
     let input = include_str!("input.txt");
-    
     let (n, d) = parse2(input);
     println!("{}", solve2(&n, &d));
-
 }
