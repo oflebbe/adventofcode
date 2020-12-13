@@ -1,4 +1,4 @@
-fn problem( input : &str) -> (i32, i32) {
+fn problem( input : &str) -> (i32, i64) {
     let mut adapters = Vec::new();
     adapters.push(0);
     for line in input.lines() {
@@ -9,8 +9,9 @@ fn problem( input : &str) -> (i32, i32) {
     adapters.push(adapters[adapters.len()-1] + 3);
     let mut count = 0;
     let mut start = 1;
+    let mut mono = vec![0i64; adapters.len()];
     while 3 >= adapters[start] {
-        count += problem2( &adapters[start+1..adapters.len()], adapters[start],  &vec![0]);
+        count += problem2( &adapters[start+1..adapters.len()], adapters[start], &mut mono);
         start+=1;
     }
     let mut distribution = vec![0,0,0,0];
@@ -20,19 +21,21 @@ fn problem( input : &str) -> (i32, i32) {
     return (distribution[3] * distribution[1], count)
 }
 
-fn problem2( ad : &[u32], last : u32, prev: &Vec<u32>) -> i32 {
+
+fn problem2( ad : &[u32], last : u32, memo: &mut [i64]) -> i64 {
     if ad.len() <= 2 {
-      //  print!("{:?},{},{:?}\n", prev, last, &ad);
        return 1
     }
     let mut count = 0;
     let mut start = 0;
+    if memo[ad.len()] != 0 {
+        return memo[ad.len()];
+    }
     while start < ad.len() && last + 3 >= ad[start] {
-        let mut newprev : Vec<u32> = prev.to_vec();
-        newprev.push( last);
-        count += problem2( &ad[start+1..ad.len()], ad[start], &newprev);
+        count += problem2( &ad[start+1..ad.len()], ad[start], memo);
         start+=1;
     }
+    memo[ad.len()]  = count;
     count
 }
 
