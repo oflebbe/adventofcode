@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 )
 
 type meal struct {
-	ingredients []string
-	allergens   []string
+	ingredients map[string]interface{}
+	allergens   map[string]interface{}
 }
 
 // mapping ingredient allergen
@@ -22,7 +22,15 @@ func readin(lines string) []meal {
 			continue
 		}
 		sides := strings.Split(line, "(contains ")
-		m := meal{ingredients: strings.Fields(sides[0]), allergens: strings.Split(sides[1][:len(sides[1])-1], ", ")}
+		var m meal
+		m.ingredients = make(map[string]interface{})
+		m.allergens = make(map[string]interface{})
+		for _, k := range strings.Fields(sides[0]) {
+			m.ingredients[k] = nil
+		}
+		for _, k := range strings.Split(sides[1][:len(sides[1])-1], ", ") {
+			m.allergens[k] = nil
+		}
 		meals = append(meals, m)
 	}
 	return meals
@@ -50,10 +58,11 @@ func removeFromSlice(s []string, el string) []string {
 	return s
 }
 
-func solve(meals []meal) []meal {
+func solve(meals []meal) (int, string) {
+
 	allergens := make(map[string]string)
 	for _, meal := range meals {
-		for _, al := range meal.allergens {
+		for al := range meal.allergens {
 			allergens[al] = ""
 		}
 	}
@@ -71,8 +80,9 @@ func solve(meals []meal) []meal {
 			}
 
 			for _, m := range meals {
-				if stringInSlice(al, m.allergens) {
-					for _, i := range m.ingredients {
+				_, ok := m.allergens[al]
+				if ok {
+					for i := range m.ingredients {
 						count[i]++
 					}
 					counter++
@@ -92,103 +102,129 @@ func solve(meals []meal) []meal {
 			}
 
 			if potential != "" && potential != "impossible!" {
+				found = true
 				allergens[al] = potential
 				println(al)
 
 				for i := 0; i < len(meals); i++ {
-					meals[i].ingredients = removeFromSlice(meals[i].ingredients, potential)
-					meals[i].allergens = removeFromSlice(meals[i].allergens, al)
+					delete(meals[i].ingredients, potential)
+					delete(meals[i].allergens, al)
 				}
 			}
 		}
 	}
-	var newmeals []meal
-	// Now return empty allergens
-	for i := 0; i < len(meals); i++ {
-		if len(meals[i].allergens) != 0 {
-			newmeals = append(newmeals, meals[i])
+	/*	var newmeals []meal
+		// Now return empty allergens
+		for i := 0; i < len(meals); i++ {
+			if len(meals[i].allergens) != 0 {
+				newmeals = append(newmeals, meals[i])
+			}
 		}
-	}
-	meals = newmeals
+		meals = newmeals
 
-	// mark all potentials
-	potentials := make(map[string]interface{})
-	for al := range allergens {
-		count := make(map[string]int)
-		counter := 0
-		if allergens[al] != "" {
-			continue
+		// mark all potentials
+		potentials := make(map[string]interface{})
+		for al := range allergens {
+			count := make(map[string]int)
+			counter := 0
+			if allergens[al] != "" {
+				continue
+			}
+
+			for _, m := range meals {
+				_, ok := m.allergens[al]
+				if ok {
+					for i := range m.ingredients {
+						count[i]++
+					}
+					counter++
+				}
+			}
+			for k, v := range count {
+				if v == counter {
+					potentials[k] = nil
+				}
+			}
 		}
 
+		newmeals = []meal{}
+		// remove everything else from meals
 		for _, m := range meals {
-			if stringInSlice(al, m.allergens) {
-				for _, i := range m.ingredients {
-					count[i]++
+			newingredients := make(map[string]interface{})
+			for i := range m.ingredients {
+				_, ok := potentials[i]
+				if ok {
+					newingredients[i] = nil
 				}
-				counter++
 			}
+			newmeals = append(newmeals, meal{ingredients: newingredients, allergens: m.allergens})
 		}
-		for k, v := range count {
-			if v == counter {
-				potentials[k] = nil
-			}
-		}
-	}
+		meals = newmeals
 
-	newmeals = []meal{}
-	// remove everything else from meals
+		for _, m := range newmeals {
+			fmt.Printf("%+v\n", m)
+		}
+
+		for len(meals) > 0 {
+			ifound := ""
+			afound := ""
+			for _, m := range meals {
+				if len(m.allergens) == 1 && len(m.ingredients) == 1 {
+					for ifound = range m.ingredients {
+						break
+					}
+					for afound = range m.allergens {
+						break
+					}
+					allergens[afound] = ifound
+					break
+				}
+			}
+			if ifound != "" {
+				for i := 0; i < len(meals); i++ {
+					delete(meals[i].ingredients, ifound)
+					delete(meals[i].allergens, afound)
+				}
+				// Now remove empty allergens
+				newmeals = []meal{}
+				for i := 0; i < len(meals); i++ {
+					if len(meals[i].allergens) != 0 {
+						newmeals = append(newmeals, meals[i])
+					}
+				}
+			}
+
+		}
+		return newmeals*/
+	counter := 0
 	for _, m := range meals {
-		var newingredients []string
-		for _, i := range m.ingredients {
-			_, ok := potentials[i]
-			if ok {
-				newingredients = append(newingredients, i)
-			}
-		}
-		newmeals = append(newmeals, meal{ingredients: newingredients, allergens: m.allergens})
+		counter += len(m.ingredients)
 	}
-	meals = newmeals
-
-	for _, m := range newmeals {
-		fmt.Printf("%+v\n", m)
+	type pair struct {
+		i string
+		a string
 	}
-
-	for len(meals) > 0 {
-		ifound := ""
-		afound := ""
-		for _, m := range meals {
-			if len(m.allergens) == 1 && len(m.ingredients) == 1 {
-				ifound = m.ingredients[0]
-				afound = m.allergens[0]
-				allergens[afound] = ifound
-				break
-			}
-		}
-		if ifound != "" {
-			for i := 0; i < len(meals); i++ {
-				meals[i].ingredients = removeFromSlice(meals[i].ingredients, ifound)
-				meals[i].allergens = removeFromSlice(meals[i].allergens, afound)
-			}
-			// Now return empty allergens
-			newmeals = []meal{}
-			for i := 0; i < len(meals); i++ {
-				if len(meals[i].allergens) != 0 {
-					newmeals = append(newmeals, meals[i])
-				}
-			}
-		}
-
+	var canonical []pair
+	for k, v := range allergens {
+		canonical = append(canonical, pair{i: v, a: k})
 	}
-	return newmeals
+	sort.Slice(canonical, func(i, j int) bool {
+		return canonical[i].a < canonical[j].a
+	})
+	st := ""
+	for _, i := range canonical {
+		if st != "" {
+			st += ","
+		}
+		st += i.i
+	}
+	return counter, st
 }
 
 func main() {
 	fh, _ := os.Open("input.txt")
 	buf, _ := ioutil.ReadAll(fh)
 	m := readin(string(buf))
-	rest := solve(m)
-	for _, m := range rest {
-		fmt.Printf("%+v\n", m)
-	}
-
+	rest, can := solve(m)
+	println(rest, can)
 }
