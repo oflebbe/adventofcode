@@ -163,6 +163,7 @@ fn step2(field: &Field) -> (Field, bool) {
     }
     (res, changes)
 }
+use std::{thread, time};
 
 fn main() {
 
@@ -206,7 +207,7 @@ L.LLLLL.LL";
     loop {
         count += 1;
         let (new, changed) = step2(&field);
-       
+        
         if !changed {
             break;
         }
@@ -217,7 +218,12 @@ L.LLLLL.LL";
     loop {
         count += 1;
         let (new, changed) = step2(&field);
-       
+        print!("{}", ansi_escapes::ClearScreen);
+        print!("{}", new);
+        let millis = time::Duration::from_millis(100);
+
+
+        thread::sleep(millis);
         if !changed {
             break;
         }

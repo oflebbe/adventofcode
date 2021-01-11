@@ -1,15 +1,15 @@
 
-fn solve( input: &str) -> usize {
+fn solve( input: &str) -> u64 {
     let mut lines = input.lines();
-    let time : usize = lines.next().unwrap().parse().unwrap();
+    let time : u64 = lines.next().unwrap().parse().unwrap();
     let bus_lines = lines.next().unwrap();
     let mut earliest = 0;
-    let mut min_time : usize = usize::MAX;
+    let mut min_time : u64 = u64::MAX;
     for bus in bus_lines.split(',') {
         if bus == "x" {
             continue;
         }
-        let nr : usize = bus.parse().unwrap();
+        let nr : u64 = bus.parse().unwrap();
         let diff = (nr * ((time / nr) + 1 )) - time;
         if diff < min_time {
             earliest = nr * diff;
@@ -19,10 +19,10 @@ fn solve( input: &str) -> usize {
     earliest
 }
 
-fn parse3( input : &str) -> (Vec<usize>, Vec<usize>) {
+fn parse3( input : &str) -> (Vec<u64>, Vec<u64>) {
     let mut offset = 0;
-    let mut diffs : Vec<usize>  = Vec::new();
-    let mut nums : Vec<usize>  = Vec::new();
+    let mut diffs : Vec<u64>  = Vec::new();
+    let mut nums : Vec<u64>  = Vec::new();
     for bus in input.split(',') {
         if bus == "x" {
             offset += 1;
@@ -30,7 +30,7 @@ fn parse3( input : &str) -> (Vec<usize>, Vec<usize>) {
         }
         diffs.push( offset);
         offset+=1;
-        let nr : usize = bus.parse().unwrap();
+        let nr : u64 = bus.parse().unwrap();
         nums.push( nr);
     }
    
@@ -43,14 +43,14 @@ fn parse3( input : &str) -> (Vec<usize>, Vec<usize>) {
     (nums, diffs)
 }
 
-fn parse2( input : &str) -> (Vec<usize>, Vec<usize>) {
+fn parse2( input : &str) -> (Vec<u64>, Vec<u64>) {
     let mut lines = input.lines();
     lines.next();
     parse3( lines.next().unwrap())
 }
 
 // Implement variant of solution to chinese remainder theorem
-fn solve2( nums : &[usize], diffs : &[usize]) -> usize {
+fn solve2( nums : &[u64], diffs : &[u64]) -> u64 {
     let mut step = nums[0];
     let mut v = 0;
     let mut i = 1;
@@ -67,7 +67,7 @@ fn solve2( nums : &[usize], diffs : &[usize]) -> usize {
             while DD < 0 { 
                 DD += nums[i] as i64;
             }
-            D = DD as usize;
+            D = DD as u64;
         }
         v += step;
     }

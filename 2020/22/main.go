@@ -1,7 +1,8 @@
 package main
 
 import (
-	"crypto/md5"
+	"fmt"
+	"hash/fnv"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 )
 
 func round(player1 []byte, player2 []byte) (r1 []byte, r2 []byte) {
+	fmt.Printf("%+v\n", player1)
 	a := player1[0]
 	b := player2[0]
 	r1 = player1[1:]
@@ -23,17 +25,7 @@ func round(player1 []byte, player2 []byte) (r1 []byte, r2 []byte) {
 	return
 }
 
-func roundRecurse(player1 []byte, player2 []byte, memo map[string]struct{}) (r1 []byte, r2 []byte) {
-
-	/*for _, p := range player1 {
-		fmt.Printf("%d,", p)
-	}
-	fmt.Println()
-	for _, p := range player2 {
-		fmt.Printf("%d,", p)
-	}
-	fmt.Println()
-	fmt.Println()*/
+func roundRecurse(player1 []byte, player2 []byte) (r1 []byte, r2 []byte) {
 	a := player1[0]
 	b := player2[0]
 	r1 = player1[1:]
@@ -128,25 +120,26 @@ func part1() int {
 
 func recurseGame(p1, p2 []byte) (score int, p1Wins bool) {
 
-	memo := make(map[string]struct{})
+	memo := make(map[uint32]struct{})
 
 	for len(p1) > 0 && len(p2) > 0 {
-		h := md5.New()
+		h := fnv.New32()
 		h.Write(p1)
 		zero := []byte{0}
 		h.Write(zero)
 		h.Write(p2)
 
-		st1 := string(h.Sum(nil))
+		st1 := h.Sum32()
 
 		_, found := memo[st1]
 
 		if found {
 			p1Wins = true
+
 			return
 		}
 		memo[st1] = struct{}{}
-		p1, p2 = roundRecurse(p1, p2, memo)
+		p1, p2 = roundRecurse(p1, p2)
 	}
 
 	p1Wins = len(p1) > 0
@@ -155,16 +148,18 @@ func recurseGame(p1, p2 []byte) (score int, p1Wins bool) {
 	} else {
 		score = scoref(p2)
 	}
+
 	return
 }
 
 func main() {
 	println(part1())
 
-	fh, _ := os.Open("input.txt")
+	/*fh, _ := os.Open("input.txt")
 	defer fh.Close()
 	buf, _ := ioutil.ReadAll(fh)
 	p1, p2 := readInput(string(buf))
 	score, _ := recurseGame(p1, p2)
-	println(score)
+
+	println(score)*/
 }
