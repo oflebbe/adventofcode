@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head><title>Advent of Code Day12</title>
+    <script>
+        "use strict";
+
+        function println(st) {
+            let o = document.getElementById("output");
+            o.insertAdjacentHTML('beforeend', st + '<br>');
+        }
+
+        function load( input) {
+            let rules = {};
+
+            let lines = input.split('\n');
+            lines.forEach( function (l) {
+                let tok = l.split(' => ');
+                if (tok[1] === '#') {
+                    rules[tok[0]] = '#';
+                }
+            });
+
+            return rules;
+        }
+
+        function generation( state, rules) {
+            let next = '';
+            for (let i = 0; i < state.length; i++) {
+                next += '.'
+            }
+            for ( let r in rules) {
+                let index = 0;
+                while (index >= 0) {
+                  index = state.indexOf( r, index);
+                  if (index >= 0) {
+                    next = next.replaceAt(  index + 2, '#');
+                    index++;
+                  }
+                  else {
+                      continue;
+                  }
+                }
+            }
+            return next;
+        }
+
+        String.prototype.replaceAt=function(index, char) {
+            let a = this.split("");
+            a[index] = char;
+            return a.join("");
+        }
+
+        window.onload = function () {
+            let rules = load(input);
+            let state = start;
+            for (let i = 0; i < 200; i++) {
+                state = "." + state + ".";
+            }
+
+            for (let g = 1; g < 200; g++) {
+                state = generation(state, rules);
+
+                let sum = 0;
+                for (let i = -200; i < state.length - 200; i++) {
+                    if (state.charAt(i + 200) === '#')
+                        sum += i;
+                }
+                println(' ' + g + " " + sum + state);
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>Canvas output</h1>
+<canvas id="canvas" width="400" height="200"></canvas>
+<h1>Console output</h1>
+<font size="10">
+    <div id="output"></div>
+</font>
+<script> /*input="...## => #\n" +
+    "..#.. => #\n" +
+    ".#... => #\n" +
+    ".#.#. => #\n" +
+    ".#.## => #\n" +
+    ".##.. => #\n" +
+    ".#### => #\n" +
+    "#.#.# => #\n" +
+    "#.### => #\n" +
+    "##.#. => #\n" +
+    "##.## => #\n" +
+    "###.. => #\n" +
+    "###.# => #\n" +
+    "####. => #";
+     start = '#..#.#..##......###...###';*/
+     start = '#.#.#....##...##...##...#.##.#.###...#.##...#....#.#...#.##.........#.#...#..##.#.....#..#.###';
+
+      input = '####. => #\n' +
+          '..#.. => .\n' +
+          '#.#.. => .\n' +
+          '.##.. => .\n' +
+          '##... => .\n' +
+          '#.##. => #\n' +
+          '##.#. => .\n' +
+          '##..# => .\n' +
+          '.###. => .\n' +
+          '.#.## => .\n' +
+          '.#..# => #\n' +
+          '..... => .\n' +
+          '###.. => #\n' +
+          '#..## => .\n' +
+          '##.## => .\n' +
+          '#.... => .\n' +
+          '...## => #\n' +
+          '....# => .\n' +
+          '#.#.# => #\n' +
+          '###.# => .\n' +
+          '.#### => #\n' +
+          '.#... => #\n' +
+          '#.### => .\n' +
+          '..### => .\n' +
+          '.#.#. => #\n' +
+          '.##.# => .\n' +
+          '#..#. => #\n' +
+          '...#. => .\n' +
+          '#...# => #\n' +
+          '..##. => .\n' +
+          '##### => #\n' +
+          '..#.# => #';
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head><title>Advent of Code Day9</title>
+    <script>
+        "use strict";
+
+        function next_marble() {
+            let number = 1;
+            return function () {
+                return number++;
+            }
+        }
+
+        function newcircle(elfs, end) {
+            let circle = [];
+            let current = 0;
+            let elf = [];
+            let marble = next_marble();
+            for (let i = 0; i < elfs; i++) {
+                elf.push(0);
+            }
+            let that = {};
+
+            function clock(amount) {
+                current = (current + amount) % circle.length;
+            }
+
+            function counterclock(amount) {
+                current = (current - amount + circle.length) % circle.length;
+            }
+
+            function insert(what) {
+                circle.splice(current + 1, 0, what);
+                current++;
+            }
+
+            function remove() {
+                return circle.splice(current, 1)[0];
+            }
+
+            that.timesteps = function () {
+                circle[0] = 0;
+                for (; ;) {
+                    let m = marble();
+                    if (m % 23 === 0) {
+                        counterclock(7)
+                        elf[m % elfs] += m + remove()
+                    } else {
+                        clock(1);
+                        insert(m);
+                    }
+                    if (m === end) {
+                        let maxi = 0;
+                        elf.forEach(x => {
+                            maxi = Math.max(x, maxi)
+                        });
+
+                        return maxi;
+                    }
+                }
+            }
+            return that;
+        }
+
+
+        function println(st) {
+            let o = document.getElementById("output");
+            o.insertAdjacentHTML('beforeend', st + '<br>');
+        }
+
+        window.onload = function () {
+            println('started');
+            let params = [ { elfs : 9, max : 25}, { elfs: 10, max : 1618}, { elfs: 13, max : 7999},
+                { elfs : 17, max: 1104}, { elfs: 21, max: 6111}, { elfs: 30, max: 5807}, { elfs: 459, max: 71790} ,
+                { elfs: 459, max: 71790} ];
+
+
+            params.forEach( x => { let s = performance.now; println( " "+ x.elfs + " " + x.max + ":" + newcircle( x.elfs, x.max).timesteps()), performance.now()-s});
+            println('stopped');
+        }
+    </script>
+</head>
+<body>
+<h1>Console output</h1>
+<font size="10">
+    <div id="output"></div>
+</font>
+</body>
+</html>

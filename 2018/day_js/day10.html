@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head><title>Advent of Code Day9</title>
+    <script>
+        "use strict";
+
+        function parse ( input) {
+            let lines = input.split(/\n/);
+            let lights = [];
+            lines.forEach( function( l) {
+                let toks = l.match(/position=<\s*(-{0,1}\d+),\s*(-{0,1}\d+)> velocity=<\s*(-{0,1}\d+),\s*(-{0,1}\d+)>/)
+                let light = {x: parseInt(toks[1]), y: parseInt(toks[2]), vx: parseInt(toks[3]), vy: parseInt(toks[4])};
+                lights.push(light);
+            });
+            return lights;
+        }
+
+        function lights( x) {
+            let li = x;
+            let that = {}
+            let step = 0;
+
+            that.display = function () {
+                let canvas = document.getElementById('canvas');
+                let ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                /*ctx.moveTo(0, 0);
+                ctx.lineTo(0, 1000);
+                ctx.lineTo(1000, 0);
+                ctx.lineTo(1000, 1000);
+
+                ctx.strokeStyle = "red";
+                ctx.stroke();*/
+                let maxx = Number.MIN_VALUE;
+                let minx = Number.MAX_VALUE
+                let maxy = Number.MIN_VALUE;
+                let miny = Number.MAX_VALUE;
+                li.forEach( function(l)  { maxx = Math.max( maxx, l.x); minx = Math.min( minx, l.x); maxy = Math.max(maxy, l.y); miny = Math.min( miny, l.y);});
+                // li.forEach( function(l) { console.log((l.x - minx) / (maxx - minx) * 1000, (l.y - miny) / (maxy - miny) * 1000)});
+                li.forEach( function(l) { ctx.fillRect((l.x - minx) *400. / (maxx - minx), (l.y - miny) *100. / (maxy - miny), 10, 10); });
+            }
+
+            that.timestep = function() {
+                step++;
+                for (let l in li) {
+                    li[l].x += li[l].vx ;
+                    li[l].y += li[l].vy ;
+                }
+            }
+
+            that.newframe = function() {
+                that.timestep();
+                //console.log(  step++);
+
+                that.display();
+                window.setTimeout( that.newframe, 400);
+            }
+            return that;
+        }
+        function println(st) {
+            let o = document.getElementById("output");
+            o.insertAdjacentHTML('beforeend', st + '<br>');
+        }
+
+        window.onload = function () {
+            let l = lights(parse(realinput));
+            for (let i = 0; i < 10391; i++) {
+                l.timestep();
+            }
+            l.display();
+            //l.newframe();
+
+        }
+    </script>
+</head>
+<body>
+<h1>Canvas output</h1>
+<canvas id="canvas" width="400" height="200"></canvas>
+<h1>Console output</h1>
+<font size="10">
+    <div id="output"></div>
+</font>
+</body>
+
+<script>
+    input = "position=< 9,  1> velocity=< 0,  2>\n" +
+        "position=< 7,  0> velocity=<-1,  0>\n" +
+        "position=< 3, -2> velocity=<-1,  1>\n" +
+        "position=< 6, 10> velocity=<-2, -1>\n" +
+        "position=< 2, -4> velocity=< 2,  2>\n" +
+        "position=<-6, 10> velocity=< 2, -2>\n" +
+        "position=< 1,  8> velocity=< 1, -1>\n" +
+        "position=< 1,  7> velocity=< 1,  0>\n" +
+        "position=<-3, 11> velocity=< 1, -2>\n" +
+        "position=< 7,  6> velocity=<-1, -1>\n" +
+        "position=<-2,  3> velocity=< 1,  0>\n" +
+        "position=<-4,  3> velocity=< 2,  0>\n" +
+        "position=<10, -3> velocity=<-1,  1>\n" +
+        "position=< 5, 11> velocity=< 1, -2>\n" +
+        "position=< 4,  7> velocity=< 0, -1>\n" +
+        "position=< 8, -2> velocity=< 0,  1>\n" +
+        "position=<15,  0> velocity=<-2,  0>\n" +
+        "position=< 1,  6> velocity=< 1,  0>\n" +
+        "position=< 8,  9> velocity=< 0, -1>\n" +
+        "position=< 3,  3> velocity=<-1,  1>\n" +
+        "position=< 0,  5> velocity=< 0, -1>\n" +
+        "position=<-2,  2> velocity=< 2,  0>\n" +
+        "position=< 5, -2> velocity=< 1,  2>\n" +
+        "position=< 1,  4> velocity=< 2,  1>\n" +
+        "position=<-2,  7> velocity=< 2, -2>\n" +
+        "position=< 3,  6> velocity=<-1, -1>\n" +
+        "position=< 5,  0> velocity=< 1,  0>\n" +
+        "position=<-6,  0> velocity=< 2,  0>\n" +
+        "position=< 5,  9> velocity=< 1, -2>\n" +
+        "position=<14,  7> velocity=<-2,  0>\n" +
+        "position=<-3,  6> velocity=< 2, -1>"
+</script>
+
+<script>
+    realinput = "position=< 31351, -51811> velocity=<-3,  5>\n" +
+        "position=< 21001,  31317> velocity=<-2, -3>\n" +
+        "position=<-41347, -41423> velocity=< 4,  4>\n" +
+        "position=<-20557,  52103> velocity=< 2, -5>\n" +
+        "position=<-30975,  41713> velocity=< 3, -4>\n" +
+        "position=< 10618, -20633> velocity=<-1,  2>\n" +
+        "position=< 31358, -10242> velocity=<-3,  1>\n" +
+        "position=< 10564, -10247> velocity=<-1,  1>\n" +
+        "position=<-20586, -31033> velocity=< 2,  3>\n" +
+        "position=< 10617,  52095> velocity=<-1, -5>\n" +
+        "position=<-30972, -51814> velocity=< 3,  5>\n" +
+        "position=< 21000, -10244> velocity=<-2,  1>\n" +
+        "position=<-30968,  20931> velocity=< 3, -2>\n" +
+        "position=<-20573,  20926> velocity=< 2, -2>\n" +
+        "position=<-10222, -41421> velocity=< 1,  4>\n" +
+        "position=< 10561,  10531> velocity=<-1, -1>\n" +
+        "position=<-10202, -31033> velocity=< 1,  3>\n" +
+        "position=<-31004, -20633> velocity=< 3,  2>\n" +
+        "position=<-51734,  10533> velocity=< 5, -1>\n" +
+        "position=<-10198,  10540> velocity=< 1, -1>\n" +
+        "position=< 52168,  20930> velocity=<-5, -2>\n" +
+        "position=<-31001, -31024> velocity=< 3,  3>\n" +
+        "position=<-10201,  52095> velocity=< 1, -5>\n" +
+        "position=< 52124,  20926> velocity=<-5, -2>\n" +
+        "position=<-20573, -20641> velocity=< 2,  2>\n" +
+        "position=<-10190,  20927> velocity=< 1, -2>\n" +
+        "position=< 52129, -31026> velocity=<-5,  3>\n" +
+        "position=< 10568,  31315> velocity=<-1, -3>\n" +
+        "position=< 52126,  41704> velocity=<-5, -4>\n" +
+        "position=<-20610,  52095> velocity=< 2, -5>\n" +
+        "position=< 10568,  10540> velocity=<-1, -1>\n" +
+        "position=<-30988, -20639> velocity=< 3,  2>\n" +
+        "position=< 31347,  10537> velocity=<-3, -1>\n" +
+        "position=< 10579,  20926> velocity=<-1, -2>\n" +
+        "position=<-20605,  31322> velocity=< 2, -3>\n" +
+        "position=< 31382,  31319> velocity=<-3, -3>\n" +
+        "position=< 20979, -20633> velocity=<-2,  2>\n" +
+        "position=<-30976,  20931> velocity=< 3, -2>\n" +
+        "position=< 20996,  10536> velocity=<-2, -1>\n" +
+        "position=< 10604,  10538> velocity=<-1, -1>\n" +
+        "position=<-20553, -31024> velocity=< 2,  3>\n" +
+        "position=<-41338, -10242> velocity=< 4,  1>\n" +
+        "position=< 41765,  41708> velocity=<-4, -4>\n" +
+        "position=< 21007, -31029> velocity=<-2,  3>\n" +
+        "position=< 41758, -20642> velocity=<-4,  2>\n" +
+        "position=<-51743, -41419> velocity=< 5,  4>\n" +
+        "position=<-10171, -41420> velocity=< 1,  4>\n" +
+        "position=< 31366, -51808> velocity=<-3,  5>\n" +
+        "position=<-51741, -20635> velocity=< 5,  2>\n" +
+        "position=< 10569,  41708> velocity=<-1, -4>\n" +
+        "position=< 41741,  52104> velocity=<-4, -5>\n" +
+        "position=< 52144, -20642> velocity=<-5,  2>\n" +
+        "position=< 41762,  10540> velocity=<-4, -1>\n" +
+        "position=< 41733, -31030> velocity=<-4,  3>\n" +
+        "position=< 31369,  10540> velocity=<-3, -1>\n" +
+        "position=<-10196, -41415> velocity=< 1,  4>\n" +
+        "position=< 31391, -20635> velocity=<-3,  2>\n" +
+        "position=< 21002,  31317> velocity=<-2, -3>\n" +
+        "position=<-51770, -31026> velocity=< 5,  3>\n" +
+        "position=<-20587,  10531> velocity=< 2, -1>\n" +
+        "position=< 31395, -10250> velocity=<-3,  1>\n" +
+        "position=< 41786,  41712> velocity=<-4, -4>\n" +
+        "position=< 41789,  20931> velocity=<-4, -2>\n" +
+        "position=< 20967,  52100> velocity=<-2, -5>\n" +
+        "position=< 10605,  31320> velocity=<-1, -3>\n" +
+        "position=< 10609, -20640> velocity=<-1,  2>\n" +
+        "position=< 52153, -20641> velocity=<-5,  2>\n" +
+        "position=<-31004,  20928> velocity=< 3, -2>\n" +
+        "position=< 41778,  31320> velocity=<-4, -3>\n" +
+        "position=<-41363,  52099> velocity=< 4, -5>\n" +
+        "position=< 41737,  31317> velocity=<-4, -3>\n" +
+        "position=< 41758,  52101> velocity=<-4, -5>\n" +
+        "position=<-51786, -51811> velocity=< 5,  5>\n" +
+        "position=< 21002, -31029> velocity=<-2,  3>\n" +
+        "position=< 41765, -31027> velocity=<-4,  3>\n" +
+        "position=<-20565,  52103> velocity=< 2, -5>\n" +
+        "position=< 21007, -10245> velocity=<-2,  1>\n" +
+        "position=< 52124, -10243> velocity=<-5,  1>\n" +
+        "position=< 41753, -41420> velocity=<-4,  4>\n" +
+        "position=<-51754,  20924> velocity=< 5, -2>\n" +
+        "position=<-30964, -51812> velocity=< 3,  5>\n" +
+        "position=< 41775, -20639> velocity=<-4,  2>\n" +
+        "position=< 31395,  41713> velocity=<-3, -4>\n" +
+        "position=< 21007, -10244> velocity=<-2,  1>\n" +
+        "position=< 10592,  20927> velocity=<-1, -2>\n" +
+        "position=<-41377, -10247> velocity=< 4,  1>\n" +
+        "position=<-20557,  10532> velocity=< 2, -1>\n" +
+        "position=< 41733,  20928> velocity=<-4, -2>\n" +
+        "position=<-51781, -10243> velocity=< 5,  1>\n" +
+        "position=< 10593,  41713> velocity=<-1, -4>\n" +
+        "position=<-41379, -10242> velocity=< 4,  1>\n" +
+        "position=<-51783,  31313> velocity=< 5, -3>\n" +
+        "position=<-41337, -41420> velocity=< 4,  4>\n" +
+        "position=<-41338, -20638> velocity=< 4,  2>\n" +
+        "position=< 41749,  52100> velocity=<-4, -5>\n" +
+        "position=< 52142,  52095> velocity=<-5, -5>\n" +
+        "position=< 10612,  10533> velocity=<-1, -1>\n" +
+        "position=< 31391, -51812> velocity=<-3,  5>\n" +
+        "position=< 52125, -41424> velocity=<-5,  4>\n" +
+        "position=< 10612, -41418> velocity=<-1,  4>\n" +
+        "position=< 31342,  20929> velocity=<-3, -2>\n" +
+        "position=<-51770, -20638> velocity=< 5,  2>\n" +
+        "position=< 41750, -10247> velocity=<-4,  1>\n" +
+        "position=< 20951, -10247> velocity=<-2,  1>\n" +
+        "position=<-20557, -10244> velocity=< 2,  1>\n" +
+        "position=<-41363,  20929> velocity=< 4, -2>\n" +
+        "position=< 41782, -20636> velocity=<-4,  2>\n" +
+        "position=< 41746,  52095> velocity=<-4, -5>\n" +
+        "position=< 10576,  52103> velocity=<-1, -5>\n" +
+        "position=<-10198, -31026> velocity=< 1,  3>\n" +
+        "position=< 31387, -10242> velocity=<-3,  1>\n" +
+        "position=<-51758,  41704> velocity=< 5, -4>\n" +
+        "position=< 52148,  52095> velocity=<-5, -5>\n" +
+        "position=<-31004, -10250> velocity=< 3,  1>\n" +
+        "position=<-41358,  20930> velocity=< 4, -2>\n" +
+        "position=<-41386, -31033> velocity=< 4,  3>\n" +
+        "position=< 31387,  10535> velocity=<-3, -1>\n" +
+        "position=<-30996,  52101> velocity=< 3, -5>\n" +
+        "position=< 10619,  20926> velocity=<-1, -2>\n" +
+        "position=< 41754,  41704> velocity=<-4, -4>\n" +
+        "position=<-41339,  31318> velocity=< 4, -3>\n" +
+        "position=< 41761, -31030> velocity=<-4,  3>\n" +
+        "position=<-20608,  31320> velocity=< 2, -3>\n" +
+        "position=< 10560, -31028> velocity=<-1,  3>\n" +
+        "position=<-30972,  41706> velocity=< 3, -4>\n" +
+        "position=< 21004, -51807> velocity=<-2,  5>\n" +
+        "position=< 52125,  41713> velocity=<-5, -4>\n" +
+        "position=<-41355,  41709> velocity=< 4, -4>\n" +
+        "position=< 52176,  20928> velocity=<-5, -2>\n" +
+        "position=<-10188,  10540> velocity=< 1, -1>\n" +
+        "position=<-20557, -31027> velocity=< 2,  3>\n" +
+        "position=< 52132,  52096> velocity=<-5, -5>\n" +
+        "position=< 52140,  20930> velocity=<-5, -2>\n" +
+        "position=< 10584, -10243> velocity=<-1,  1>\n" +
+        "position=<-30943, -51815> velocity=< 3,  5>\n" +
+        "position=<-30947, -31024> velocity=< 3,  3>\n" +
+        "position=< 31378,  52095> velocity=<-3, -5>\n" +
+        "position=<-20571, -10248> velocity=< 2,  1>\n" +
+        "position=< 20999,  31314> velocity=<-2, -3>\n" +
+        "position=<-30963, -51813> velocity=< 3,  5>\n" +
+        "position=< 31390, -41415> velocity=<-3,  4>\n" +
+        "position=<-20609, -41420> velocity=< 2,  4>\n" +
+        "position=< 10568,  31318> velocity=<-1, -3>\n" +
+        "position=< 31342,  20923> velocity=<-3, -2>\n" +
+        "position=< 31347, -20641> velocity=<-3,  2>\n" +
+        "position=<-10193, -20642> velocity=< 1,  2>\n" +
+        "position=<-41347,  10532> velocity=< 4, -1>\n" +
+        "position=<-41379,  10533> velocity=< 4, -1>\n" +
+        "position=< 20959,  20929> velocity=<-2, -2>\n" +
+        "position=< 52135, -20642> velocity=<-5,  2>\n" +
+        "position=< 41761,  31316> velocity=<-4, -3>\n" +
+        "position=<-20568,  10531> velocity=< 2, -1>\n" +
+        "position=<-10193, -20640> velocity=< 1,  2>\n" +
+        "position=<-41342,  41705> velocity=< 4, -4>\n" +
+        "position=<-20568,  41704> velocity=< 2, -4>\n" +
+        "position=< 41745,  10535> velocity=<-4, -1>\n" +
+        "position=<-20603,  10531> velocity=< 2, -1>\n" +
+        "position=< 52157, -10251> velocity=<-5,  1>\n" +
+        "position=< 52142, -10247> velocity=<-5,  1>\n" +
+        "position=< 10576, -31030> velocity=<-1,  3>\n" +
+        "position=< 41750,  52099> velocity=<-4, -5>\n" +
+        "position=< 31390,  10540> velocity=<-3, -1>\n" +
+        "position=<-51781,  41705> velocity=< 5, -4>\n" +
+        "position=< 10600, -10242> velocity=<-1,  1>\n" +
+        "position=< 41737, -20642> velocity=<-4,  2>\n" +
+        "position=<-41370, -41415> velocity=< 4,  4>\n" +
+        "position=< 20980, -10250> velocity=<-2,  1>\n" +
+        "position=< 21007,  31321> velocity=<-2, -3>\n" +
+        "position=< 10562, -20642> velocity=<-1,  2>\n" +
+        "position=<-30952, -41417> velocity=< 3,  4>\n" +
+        "position=<-31004,  52104> velocity=< 3, -5>\n" +
+        "position=< 52129,  10532> velocity=<-5, -1>\n" +
+        "position=<-51730, -41424> velocity=< 5,  4>\n" +
+        "position=<-20613, -51808> velocity=< 2,  5>\n" +
+        "position=<-10214,  41706> velocity=< 1, -4>\n" +
+        "position=<-41368, -20633> velocity=< 4,  2>\n" +
+        "position=< 31403,  31322> velocity=<-3, -3>\n" +
+        "position=< 52153,  20922> velocity=<-5, -2>\n" +
+        "position=<-51736, -41419> velocity=< 5,  4>\n" +
+        "position=< 10568, -20642> velocity=<-1,  2>\n" +
+        "position=< 41741, -20641> velocity=<-4,  2>\n" +
+        "position=< 41743, -10251> velocity=<-4,  1>\n" +
+        "position=<-30944, -31024> velocity=< 3,  3>\n" +
+        "position=< 20956,  10538> velocity=<-2, -1>\n" +
+        "position=<-41350,  20931> velocity=< 4, -2>\n" +
+        "position=<-30992, -51811> velocity=< 3,  5>\n" +
+        "position=<-31001,  31313> velocity=< 3, -3>\n" +
+        "position=< 20959,  41709> velocity=<-2, -4>\n" +
+        "position=<-10214, -41420> velocity=< 1,  4>\n" +
+        "position=<-51766, -20638> velocity=< 5,  2>\n" +
+        "position=< 52140,  20923> velocity=<-5, -2>\n" +
+        "position=< 31358,  31314> velocity=<-3, -3>\n" +
+        "position=< 20956,  31315> velocity=<-2, -3>\n" +
+        "position=< 41789, -31031> velocity=<-4,  3>\n" +
+        "position=<-20585, -41415> velocity=< 2,  4>\n" +
+        "position=< 31390,  10539> velocity=<-3, -1>\n" +
+        "position=< 31370,  20922> velocity=<-3, -2>\n" +
+        "position=<-30970,  31322> velocity=< 3, -3>\n" +
+        "position=< 41785,  31320> velocity=<-4, -3>\n" +
+        "position=<-10162, -41415> velocity=< 1,  4>\n" +
+        "position=<-20569,  31320> velocity=< 2, -3>\n" +
+        "position=< 52177,  41704> velocity=<-5, -4>\n" +
+        "position=< 21009,  31317> velocity=<-2, -3>\n" +
+        "position=< 31345, -41420> velocity=<-3,  4>\n" +
+        "position=<-41335,  52099> velocity=< 4, -5>\n" +
+        "position=<-51733, -20634> velocity=< 5,  2>\n" +
+        "position=<-41345, -51811> velocity=< 4,  5>\n" +
+        "position=<-41368, -20638> velocity=< 4,  2>\n" +
+        "position=<-10203, -41424> velocity=< 1,  4>\n" +
+        "position=<-20597, -51809> velocity=< 2,  5>\n" +
+        "position=<-51778, -41418> velocity=< 5,  4>\n" +
+        "position=< 31400,  41704> velocity=<-3, -4>\n" +
+        "position=< 41734, -31029> velocity=<-4,  3>\n" +
+        "position=< 52184, -31029> velocity=<-5,  3>\n" +
+        "position=< 20967,  41707> velocity=<-2, -4>\n" +
+        "position=<-51746,  31315> velocity=< 5, -3>\n" +
+        "position=< 10600, -41417> velocity=<-1,  4>\n" +
+        "position=< 41775, -31030> velocity=<-4,  3>\n" +
+        "position=< 21010, -41415> velocity=<-2,  4>\n" +
+        "position=<-10166,  41707> velocity=< 1, -4>\n" +
+        "position=< 52166,  41708> velocity=<-5, -4>\n" +
+        "position=<-41355, -31027> velocity=< 4,  3>\n" +
+        "position=<-20597, -31028> velocity=< 2,  3>\n" +
+        "position=< 31355,  31313> velocity=<-3, -3>\n" +
+        "position=<-30972, -41422> velocity=< 3,  4>\n" +
+        "position=<-51725,  20922> velocity=< 5, -2>\n" +
+        "position=< 31382,  20930> velocity=<-3, -2>\n" +
+        "position=<-30946, -51811> velocity=< 3,  5>\n" +
+        "position=< 52132, -20640> velocity=<-5,  2>\n" +
+        "position=<-10177, -51814> velocity=< 1,  5>\n" +
+        "position=< 10605, -20633> velocity=<-1,  2>\n" +
+        "position=< 31376, -20642> velocity=<-3,  2>\n" +
+        "position=<-20573,  52095> velocity=< 2, -5>\n" +
+        "position=<-41358,  52096> velocity=< 4, -5>\n" +
+        "position=<-10218, -41415> velocity=< 1,  4>\n" +
+        "position=< 52180,  31321> velocity=<-5, -3>\n" +
+        "position=< 10605,  20927> velocity=<-1, -2>\n" +
+        "position=<-20557, -41418> velocity=< 2,  4>\n" +
+        "position=< 52164,  20928> velocity=<-5, -2>\n" +
+        "position=< 10565,  10539> velocity=<-1, -1>\n" +
+        "position=< 31395, -51815> velocity=<-3,  5>\n" +
+        "position=< 20967, -20635> velocity=<-2,  2>\n" +
+        "position=< 20967,  10538> velocity=<-2, -1>\n" +
+        "position=< 10562,  10535> velocity=<-1, -1>\n" +
+        "position=<-20605,  20925> velocity=< 2, -2>\n" +
+        "position=<-30948, -31024> velocity=< 3,  3>\n" +
+        "position=<-10206,  52099> velocity=< 1, -5>\n" +
+        "position=<-10217, -51810> velocity=< 1,  5>\n" +
+        "position=< 10596,  10531> velocity=<-1, -1>\n" +
+        "position=< 20977, -51810> velocity=<-2,  5>\n" +
+        "position=<-10213, -10247> velocity=< 1,  1>\n" +
+        "position=< 31378, -10242> velocity=<-3,  1>\n" +
+        "position=< 10580, -51811> velocity=<-1,  5>\n" +
+        "position=<-30999,  41710> velocity=< 3, -4>\n" +
+        "position=<-41387,  31318> velocity=< 4, -3>\n" +
+        "position=< 31374,  52096> velocity=<-3, -5>\n" +
+        "position=< 52169,  10531> velocity=<-5, -1>\n" +
+        "position=<-30994, -31029> velocity=< 3,  3>\n" +
+        "position=< 41777, -41416> velocity=<-4,  4>\n" +
+        "position=< 21004, -31024> velocity=<-2,  3>\n" +
+        "position=< 41736, -20633> velocity=<-4,  2>\n" +
+        "position=< 10579,  20922> velocity=<-1, -2>\n" +
+        "position=<-41387, -51808> velocity=< 4,  5>\n" +
+        "position=<-20561,  10534> velocity=< 2, -1>\n" +
+        "position=<-51728, -31033> velocity=< 5,  3>\n" +
+        "position=< 31352,  20922> velocity=<-3, -2>\n" +
+        "position=<-30944,  41704> velocity=< 3, -4>\n" +
+        "position=< 52135,  41708> velocity=<-5, -4>\n" +
+        "position=<-30948, -10242> velocity=< 3,  1>\n" +
+        "position=<-20568, -41423> velocity=< 2,  4>\n" +
+        "position=< 41753, -31033> velocity=<-4,  3>\n" +
+        "position=< 31360,  52095> velocity=<-3, -5>\n" +
+        "position=<-41338,  31317> velocity=< 4, -3>\n" +
+        "position=< 20975,  20922> velocity=<-2, -2>\n" +
+        "position=< 20951,  41706> velocity=<-2, -4>\n" +
+        "position=<-51746, -20639> velocity=< 5,  2>\n" +
+        "position=< 10587, -10247> velocity=<-1,  1>\n" +
+        "position=<-51778, -20638> velocity=< 5,  2>\n" +
+        "position=<-51741,  20925> velocity=< 5, -2>\n" +
+        "position=< 10605,  41710> velocity=<-1, -4>\n" +
+        "position=<-51781,  52100> velocity=< 5, -5>\n" +
+        "position=< 10600,  31314> velocity=<-1, -3>\n" +
+        "position=<-51778, -31025> velocity=< 5,  3>\n" +
+        "position=<-51778, -41418> velocity=< 5,  4>\n" +
+        "position=< 10592, -10248> velocity=<-1,  1>\n" +
+        "position=<-10177,  20924> velocity=< 1, -2>\n" +
+        "position=<-10185,  31321> velocity=< 1, -3>\n" +
+        "position=< 20987, -41415> velocity=<-2,  4>\n" +
+        "position=<-10211,  52095> velocity=< 1, -5>\n" +
+        "position=< 20986, -10251> velocity=<-2,  1>\n" +
+        "position=<-10218, -41424> velocity=< 1,  4>\n" +
+        "position=<-10181,  31314> velocity=< 1, -3>\n" +
+        "position=<-51760, -31028> velocity=< 5,  3>\n" +
+        "position=< 41759, -41415> velocity=<-4,  4>\n" +
+        "position=<-30954, -51811> velocity=< 3,  5>\n" +
+        "position=<-31004,  20922> velocity=< 3, -2>\n" +
+        "position=< 52164,  52100> velocity=<-5, -5>\n" +
+        "position=<-30964, -31031> velocity=< 3,  3>\n" +
+        "position=< 31358, -41420> velocity=<-3,  4>\n" +
+        "position=< 52141,  41704> velocity=<-5, -4>\n" +
+        "position=< 10585, -51815> velocity=<-1,  5>\n" +
+        "position=<-20557, -51812> velocity=< 2,  5>\n" +
+        "position=<-10169, -10251> velocity=< 1,  1>\n" +
+        "position=< 10576,  52095> velocity=<-1, -5>\n" +
+        "position=<-10170,  41707> velocity=< 1, -4>\n" +
+        "position=< 31363, -41424> velocity=<-3,  4>\n" +
+        "position=<-41339,  20927> velocity=< 4, -2>\n" +
+        "position=<-30978,  52095> velocity=< 3, -5>\n" +
+        "position=<-51786, -10245> velocity=< 5,  1>\n" +
+        "position=<-41371,  31322> velocity=< 4, -3>\n" +
+        "position=<-30996,  20925> velocity=< 3, -2>\n" +
+        "position=< 31374,  20930> velocity=<-3, -2>\n" +
+        "position=< 52175, -10246> velocity=<-5,  1>\n" +
+        "position=< 31374,  41710> velocity=<-3, -4>\n" +
+        "position=<-10182,  52099> velocity=< 1, -5>\n" +
+        "position=<-10206,  41713> velocity=< 1, -4>\n" +
+        "position=<-20557, -31026> velocity=< 2,  3>\n" +
+        "position=< 31377,  52104> velocity=<-3, -5>\n" +
+        "position=< 10608, -41424> velocity=<-1,  4>\n" +
+        "position=<-30964, -20638> velocity=< 3,  2>\n" +
+        "position=<-51741, -10243> velocity=< 5,  1>\n" +
+        "position=< 52156,  31321> velocity=<-5, -3>\n" +
+        "position=< 31354,  31313> velocity=<-3, -3>\n" +
+        "position=< 20980,  20922> velocity=<-2, -2>\n" +
+        "position=<-20556, -10242> velocity=< 2,  1>\n" +
+        "position=< 52129, -20636> velocity=<-5,  2>\n" +
+        "position=< 20976,  41704> velocity=<-2, -4>\n" +
+        "position=<-10198,  41712> velocity=< 1, -4>\n" +
+        "position=< 31394, -41417> velocity=<-3,  4>\n" +
+        "position=<-20573,  52098> velocity=< 2, -5>\n" +
+        "position=<-41350,  20928> velocity=< 4, -2>\n" +
+        "position=< 52156,  10532> velocity=<-5, -1>\n" +
+        "position=<-31002,  20926> velocity=< 3, -2>\n" +
+        "position=<-30999,  10534> velocity=< 3, -1>\n" +
+        "position=< 52177,  52104> velocity=<-5, -5>\n" +
+        "position=<-30978,  31322> velocity=< 3, -3>\n" +
+        "position=<-30959,  31318> velocity=< 3, -3>\n" +
+        "position=<-51741, -31031> velocity=< 5,  3>\n" +
+        "position=< 31344, -10242> velocity=<-3,  1>\n" +
+        "position=<-41386, -10251> velocity=< 4,  1>\n" +
+        "position=< 41738, -10243> velocity=<-4,  1>\n" +
+        "position=< 41778, -10245> velocity=<-4,  1>\n" +
+        "position=< 41774, -41422> velocity=<-4,  4>\n" +
+        "position=<-10166,  20927> velocity=< 1, -2>\n" +
+        "position=< 21011,  41708> velocity=<-2, -4>\n" +
+        "position=<-30988, -31027> velocity=< 3,  3>\n" +
+        "position=<-41339, -51815> velocity=< 4,  5>\n" +
+        "position=< 31385, -10245> velocity=<-3,  1>\n" +
+        "position=<-41369,  52095> velocity=< 4, -5>\n" +
+        "position=< 52129,  10533> velocity=<-5, -1>\n" +
+        "position=< 21010, -41424> velocity=<-2,  4>\n" +
+        "position=<-30964,  10533> velocity=< 3, -1>";
+</script>
+</html>

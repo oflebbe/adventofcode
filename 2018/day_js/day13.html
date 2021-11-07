@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #output {
+            background-color: linen;
+            font-family: monospace;
+        }
+
+        h1 {
+            color: maroon;
+            margin-left: 40px;
+        }
+    </style>
+    <title>Advent of Code Day12</title>
+    <script>
+        "use strict";
+
+        function println(st) {
+            let o = document.getElementById("output");
+            o.insertAdjacentHTML('beforeend', st + '<br>');
+        }
+
+        function load( input) {
+            let rows = [];
+            let lines = input.split('\n');
+            let  y = 0;
+            lines.forEach( function (l) {
+               let chars = l.split('');
+               rows.push(chars);
+               y++;
+            });
+
+            return rows;
+        }
+
+        function extractTrack( rows) {
+            let n = []
+            for (let x = 0; x < rows.length; x++) {
+                let r = rows[i]
+                let rn = []
+                for (let y = 0; y < r.length; y++) {
+                    let ch = r[y]
+                    if (ch === '>' || ch === '<') {
+                        ch = '-';
+                    } else if (ch === '^' || ch === 'v') {
+                        ch = '|';
+                    }
+                    rn.push(ch);
+                }
+                n.push(rn);
+            }
+            return n
+        }
+
+
+
+        function pretty(rows) {
+            rows.forEach( l => println( l.join('')));
+        }
+
+        function generation( ) {
+
+            let n = []
+            for (let x = 0; x < rows.length; x++) {
+                let r = rows[i]
+                let rn = []
+                for (let y = 0; y < r.length; y++) {
+                    rn.push(r[y])
+                }
+                n.push(rn);
+            }
+            for (let x = 0; x < rows.length) {
+                let r = rows[i]
+                for (let y = 0; y < r.length; y++) {
+                    if (r[y] === '>') {
+                        if (r[y+1] === "-") {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        String.prototype.replaceAt=function(inx, char) {
+            let a = this.split("");
+            a[inx] = char;
+            return a.join("");
+        }
+
+        window.onload = function () {
+            let rows = load(input);
+            pretty( rows);
+
+        }
+    </script>
+</head>
+<body>
+<h1>Console output</h1>
+    <pre id="output"></pre>
+</body>
+<script>
+    input = "/->-\\        \n" +
+        "|   |  /----\\\n" +
+        "| /-+--+-\\  |\n" +
+        "| | |  | v  |\n" +
+        "\\-+-/  \\-+--/\n" +
+        "  \\------/  "
+</script>
+
+</html>

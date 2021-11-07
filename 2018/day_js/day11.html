@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head><title>Advent of Code Day9</title>
+    <script>
+        "use strict";
+
+        let serial = 5034
+        let cache = {};
+
+        function power (x,y) {
+            let rackid = x + 10;
+            let powerlevel = rackid * y + serial;
+            powerlevel *= rackid;
+            return parseInt(powerlevel.toString().slice(-3).slice(0, 1)) - 5;
+        }
+
+        function println(st) {
+            let o = document.getElementById("output");
+            o.insertAdjacentHTML('beforeend', st + '<br>');
+        }
+
+        function pretty( b) {
+            println( b.x.toString() + "," + b.y.toString() +":" + b.sum.toString() );
+        }
+
+        function square( x, y, o) {
+            let sum = 0;
+            for (let i = 0; i < o; i++) {
+                for (let j = 0; j < o; j++) {
+                    sum += array[ index(x+i, y+j)]
+                }
+            }
+            return sum;
+        }
+
+        function print_square( x, y) {
+
+            for (let j = 0; j < 3; j++) {
+                let st = ''
+                for (let i = 0; i < 3; i++) {
+                    st += array[ index(x+i, y+j)] + ' '
+                }
+                println( st)
+            }
+        }
+
+        function best( o) {
+            let b = { x:0, y:0, sum: Number.MIN_VALUE};
+            for (let i = 1; i <= 300 -o; i++) {
+                for (let j = 1; j <= 300 - o; j++) {
+                    let p = square(i,j,o);
+                    if (p> b.sum) {
+                        b = { x: i, y: j, sum : p};
+                    }
+                }
+            }
+            return b;
+        }
+
+        function index(i,j) {
+            return (i-1)*300+(j-1);
+        }
+
+
+
+        let array = Array( 300*300);
+        window.onload = function () {
+/*
+            serial = 8;
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+
+            println(power(3, 5).toString() + "== 4")
+            serial = 71
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+            println(power(101, 153).toString() + "== 4")
+            serial = 18;
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+            println(square(33, 45).toString() + "== 29");
+            print_square(33, 45)
+            pretty(best(3));
+
+            serial = 5034
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+            pretty(best(3));
+            serial = 18;
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+            pretty(best(16));*/
+            serial = 5034;
+            for (let i = 1; i <= 300; i++) {
+                for (let j = 1 ; j <= 300; j++) {
+                    array[index(i,j)] = power(i,j);
+                }
+            }
+
+            let b = best(2);
+            b.o = 2;
+            for (let i = 3; i < 100; i++) {
+                console.log(i);
+                let p = best(i)
+                if (b.sum < p.sum) {
+                    b = p;
+                    b.o = i;
+                }
+            }
+            println( b.o);
+            pretty(b);
+
+
+        }
+    </script>
+</head>
+<body>
+<h1>Canvas output</h1>
+<canvas id="canvas" width="400" height="200"></canvas>
+<h1>Console output</h1>
+<font size="10">
+    <div id="output"></div>
+</font>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"math"
+	"strings"
+)
+
+type point struct {
+	x, y int
+}
+
+func euclid(a, b int) int {
+	for b != 0 {
+		h := a % b
+		a = b
+		b = h
+	}
+	return a
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	} else {
+		return a
+	}
+
+}
+func simplify(a, b int) (int, int) {
+	c := euclid(abs(a), abs(b))
+	a /= c
+	b /= c
+	return a, b
+}
+
+func parse(lines []string) []point {
+	ret := make([]point, 0)
+	for y, l := range lines {
+		l = strings.Trim(l, " ")
+		for x, i := range l {
+			if i == '#' {
+				p := point{x, y}
+				ret = append(ret, p)
+			}
+		}
+	}
+	return ret
+}
+
+func findAstro(asteroids []point) (point, int) {
+	max := 0
+	maxPoint := point{0, 0}
+	for i, p := range asteroids {
+		distances := make(map[point]*[]int)
+		for j, q := range asteroids {
+			if i == j {
+				continue
+			}
+			x := p.x - q.x
+			y := p.y - q.y
+			x2, y2 := simplify(x, y)
+			sp := point{x2, y2}
+			d := distances[sp]
+			if d == nil {
+				m := make([]int, 1)
+				m[0] = x*x + y*y
+				distances[sp] = &m
+
+			} else {
+				m := append(*d, x*x+y*y)
+				distances[sp] = &m
+			}
+		}
+		if len(distances) > max {
+			maxPoint = p
+			max = len(distances)
+		}
+	}
+	return maxPoint, max + 1
+}
+
+func angle(x, y int) float64 {
+	if y == 0 {
+		if x > 0 {
+			return math.Pi / 2.
+		} else {
+			return -math.Pi / 2.
+		}
+	}
+	phi := math.Atan(float64(x) / float64(y))
+	if x < 0 {
+		phi += math.Pi
+	}
+	return phi
+}
+
+/*
+
+func sortAstro(asteroids []point, best point) (point, int) {
+	max := 0
+	maxPoint := point{0, 0}
+	distances := make(map[point]*[]int)
+	for j, q := range asteroids {
+		if best == q {
+			continue
+		}
+		x := best.x - q.x
+		y := best.y - q.y
+		x2, y2 := simplify(x, y)
+		sp := point{x2, y2}
+		d := distances[sp]
+		if d == nil {
+			m := make([]int, 1)
+			m[0] = x*x + y*y
+			distances[sp] = &m
+
+		} else {
+			m := append(*d, x*x+y*y)
+			distances[sp] = &m
+		}
+	}
+	for k, _ := range distances {
+		phi := angle(k.x, k.y)
+
+	}
+
+	return maxPoint, max + 1
+}
+*/
+
+func main() {
+	input, err := ioutil.ReadFile("input")
+	if err != nil {
+		panic("ioutil")
+	}
+	lines := strings.Split(string(input), "\n")
+	list := parse(lines)
+	p, m := findAstro(list)
+
+	fmt.Printf("%+v,%d\n", p, m)
+}
