@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    Winning Board: <div id="result"></div>
+    Part1 : <div id="part1"></div>
+    Loosing Board: <div id="result2"></div>
+
+    Part2 : <div id="part2"></div>
+</body>
+<script>
+    fetch("example.txt").then(response => response.text()).then(data => solve(data, false));
+    fetch("example.txt").then(response => response.text()).then(data => solve(data, true));
+
+    function solve(data, last) {
+        let blocks = data.split("\n\n");
+        let numbers = blocks.shift().split(",").map(x => parseInt(x));
+        const re = /\s+/;
+        let counter = 0
+        let blockArray = blocks.map(blockRead);
+        for (let i = 0; i < numbers.length; i++) {
+            c = handleOneBingo(numbers[i]);
+            if (c.length > 0) {
+                if (!last) {
+
+                    console.log("winning board:" + (c[0] + 1));
+                    document.getElementById("result").innerHTML = "" + (c + 1);
+
+                    let sum = blockArray[c[0]].flatMap(x => x).filter(x => x >= 0).reduce((x, y) => x + y, 0)
+                    console.log("sum:" + sum);
+
+                    let part1 = sum * numbers[i];
+                    console.log("part1:" + part1);
+                    document.getElementById("part1").innerHTML = "" + part1;
+                    break;
+                } else {
+                    counter += c.length
+                    if (counter >= blockArray.length) {
+                        console.log("loosing board:" + (c[0] + 1));
+                        document.getElementById("result2").innerHTML = "" + (c[0] + 1);
+                        let sum = blockArray[c].flatMap(x => x).filter(x => x >= 0).reduce((x, y) => x + y, 0)
+                        console.log("sum:" + sum);
+
+                        let part1 = sum * numbers[i];
+                        console.log("part1:" + part1);
+                        document.getElementById("part2").innerHTML = "" + part1;
+                        break
+                    }
+                    for (let i = 0; i < c.length; i++) {
+                        blockArray[c[i]] = blockArray[c[i]].map(row => row.map(x => 1000)) // make it unsolvable
+                    }
+                }
+            }
+        }
+        console.log("Ende");
+
+
+        function blockRead(block) {
+            return block.split("\n").map(line => line.trimStart()).map(line =>
+                line.split(re)).map(val => val.map(x => parseInt(x)));
+        }
+
+        function handleOneBingo(value) {
+            blockArray = blockArray.map(b => handleOneBlock(b, value));
+            found = []
+            for (i = 0; i < blockArray.length; i++) {
+                if (checkForBingo(blockArray[i])) {
+                    found.push(i)
+                }
+            }
+            return found;
+        }
+
+        function handleOneBlock(block, value) {
+            return block.map(row => row.map(val => val === value ? -1 : val));
+        }
+
+        function checkForBingo(block) {
+            for (let r = 0; r < 5; r++) {
+                if (block[r].filter(x => x !== -1).length === 0) {
+                    // bingo
+                    return true;
+                }
+            }
+            for (let c = 0; c < 5; c++) {
+                let count = 0;
+                for (let r = 0; r < 5; r++) {
+                    if (block[r][c] !== -1) {
+                        count++;
+                        break;
+                    }
+                }
+                if (count === 0) {
+                    // bingo
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+</script>
+
+</html>
