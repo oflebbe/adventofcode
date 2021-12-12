@@ -45,7 +45,6 @@ fn lowpoints(matrix: &Vec<Vec<i16>>) -> u32 {
 }
 
 fn bassin(matrix: &mut Vec<Vec<i16>>) -> u32 {
-    let mut sum = 0;
     let mut next_bassin = -1;
     let mut found_something = true;
     while found_something {
