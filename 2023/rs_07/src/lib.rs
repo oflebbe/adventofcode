@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::cmp::Ordering;
 
-
+#[derive(Clone)]
 pub struct Cards {
     cards: String,
     bid: i32,
@@ -94,7 +94,7 @@ fn higher( a : &Cards, b: &Cards, joker_mode: bool) -> Ordering {
     Ordering::Equal
 }
 
-pub fn parse(file_name: &str, joker_mode : bool) -> Vec<Cards> {
+pub fn parse(file_name: &str) -> Vec<Cards> {
     let contents: Vec<String> = fs::read_to_string(file_name)
         .expect("Should have been able to read the file")
         .split("\n").map(|x| x.to_string())
@@ -110,14 +110,17 @@ pub fn parse(file_name: &str, joker_mode : bool) -> Vec<Cards> {
             bid: toks[1].parse::<i32>().unwrap(),
         });
     }
-    list.sort_by( |a, b| higher( a, b, joker_mode));
     list
 }
 
 
-pub fn eval( v : &Vec<Cards>) -> i32 {
+
+pub fn eval( list : &Vec<Cards>, joker_mode: bool) -> i32 {
+    let mut v = list.clone();
+    v.sort_by( |a, b| higher( a, b, joker_mode));
+    
     let mut sum = 0;
-    for i in 0..v.len() {
+    for i in 0..list.len() {
         sum += ( i + 1)as i32 * v[i].bid;
     }
     sum
@@ -169,21 +172,18 @@ fn test2() {
 
 #[test]
 fn test_parse() {
-    let limit = parse( "test.txt", false);
-    assert_eq!( limit[0].bid, 765);
-    assert_eq!( limit[4].bid, 483);
+    let limit = eval(&parse( "test.txt"), false);
 
-    assert_eq!( eval( &limit), 6440);
+    assert_eq!( limit, 6440);
 }
 
 
 #[test]
 fn test_parse2() {
 
-    let limit = parse( "test.txt", true);
-    assert_eq!( limit[0].bid, 765);
-    assert_eq!( limit[4].bid, 220);
+    let limit =eval( &parse( "test.txt"), true);
+    
 
-    assert_eq!( eval( &limit), 5905);
+    assert_eq!(limit, 5905);
 }
 
