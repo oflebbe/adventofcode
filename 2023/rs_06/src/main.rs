@@ -25,8 +25,6 @@ fn test1( ) {
     assert_eq!(solve2( 7, 9), 4);
     assert_eq!(solve2( 15, 40), 8);
     assert_eq!(solve2( 30, 200), 9);
-
-
 }
 
 fn main() {
